@@ -8,7 +8,7 @@ GameWindow::GameWindow() : _window(NULL), _renderer(NULL)
 {
   this->_window = SDL_CreateWindow(game_settings::TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, game_settings::WIDTH * game_settings::SCALE, game_settings::HEIGHT * game_settings::SCALE, SDL_WINDOW_SHOWN);
 
-  this->_renderer = SDL_CreateRenderer(this->_window, 0, SDL_RENDERER_ACCELERATED || SDL_RENDERER_PRESENTVSYNC);
+  this->_renderer = SDL_CreateRenderer(this->_window, 0, SDL_RENDERER_ACCELERATED);
 
   if (this->_window == NULL)
   {

@@ -5,7 +5,7 @@
 namespace game_settings
 {
   const char TITLE[] = "Asteroids";
-  const int WIDTH = 250;
+  const int WIDTH = 400;
   const int HEIGHT = 400;
   const int SCALE = 2;
   const int FPS = 60;

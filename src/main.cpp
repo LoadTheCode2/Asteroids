@@ -7,7 +7,7 @@
 #include "RenderUnit.hpp"
 #include "Ship.hpp"
 
-int main(int, char **)
+int main(int argc, char **argv)
 {
   if (SDL_Init(SDL_INIT_VIDEO) > 0)
     std::cout << "SDL2 has failed to init: " << SDL_GetError() << std::endl;
@@ -40,21 +40,14 @@ int main(int, char **)
 
     if (inputs.keyHeld(SDL_SCANCODE_LEFT))
       ship.turnLeft();
-    else if (inputs.keyHeld(SDL_SCANCODE_RIGHT))
+    if (inputs.keyHeld(SDL_SCANCODE_RIGHT))
       ship.turnRight();
-    else
-      ship.stopTurn();
-
     if (inputs.keyHeld(SDL_SCANCODE_UP))
       ship.boost();
-    // else
-    //   ship.stopBoost();
 
     inputs.reset();
 
     window.clear();
-
-    // DRAW HERE
 
     bg.draw(window);
 
@@ -68,10 +61,8 @@ int main(int, char **)
       SDL_Delay(timePerFrame - beforeElapsedTime - game_settings::DELAY_OFFSET);
 
     const int currentFrameTicks = SDL_GetTicks();
-    // printf("TIME: %d, FPS: %d\n", currentFrameTicks - ancientFrameTicks, timePerFrame);
     const float elapsedTime = std::min(currentFrameTicks - ancientFrameTicks, timePerFrame);
 
-    // UPDATE HERE
     ship.update(elapsedTime);
 
     ancientFrameTicks = SDL_GetTicks();

@@ -9,14 +9,16 @@ public:
 
   void turnLeft();
   void turnRight();
-  void stopTurn();
 
   void boost();
-  void stopBoost();
 
   void draw(GameWindow &pWindow);
   void update(float pElapsedTime);
 
 private:
-  float _degree, _dSpeed, _dDegree;
+  float _degree, _rotateVel, _forwardVel;
+  float _rotateAcc, _forwardAcc;
+
+  void applyForwardForce(float force);
+  void applyRotateForce(float force);
 };

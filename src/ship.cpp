@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <cmath>
+#include <iostream>
 
 #include "Ship.hpp"
 #include "RenderUnit.hpp"
@@ -6,67 +8,57 @@
 
 namespace ship_properties
 {
-  const float TURN_LIMIT = 0.01f;
-  const float TURN_ACCELERATION = 0.0025f;
-  // const float SPEED = 0.2f;
-  const float ACCELERATION = 0.005f;
-  const float SPEED_LIMIT = 0.2f;
-  const float DRAG_STRENGTH = 0.0001f;
-  const float TURN_DRAG_STRENGTH = 0.00005f;
-  const float PI = 2 * std::acos(0.0);
+  const float TURN_SPEED = 0.005f;
+  const float TURN_STRENGTH = 0.001f;
+  const float TURN_DRAG = 0.05f;
+
+  const float BOOST_SPEED = 0.2f;
+  const float BOOST_STRENGTH = 0.1f;
+  const float BOOST_DRAG = 0.01f;
 }
 
-Ship::Ship(GameWindow &pWindow, const char *pFilePath, int pW, int pH) : RenderUnit(pWindow, pFilePath, game_settings::WIDTH / 2, game_settings::HEIGHT / 2, pW, pH), _degree(-ship_properties::PI / 2), _dSpeed(0.0f), _dDegree(0.0f) {}
+Ship::Ship(GameWindow &pWindow, const char *pFilePath, int pW, int pH) : RenderUnit(pWindow, pFilePath, (game_settings::WIDTH - pW) / 2, (game_settings::HEIGHT - pH) / 2, pW, pH), _degree(-M_PI / 2), _forwardVel(0.0f), _rotateVel(0.0f), _forwardAcc(0.0f), _rotateAcc(0.0f) {}
 
 void Ship::turnLeft()
 {
-  this->_dDegree -= ship_properties::TURN_ACCELERATION;
+  this->applyRotateForce(-ship_properties::TURN_STRENGTH);
 }
 
 void Ship::turnRight()
 {
-  this->_dDegree += ship_properties::TURN_ACCELERATION;
-}
-
-void Ship::stopTurn()
-{
-  // this->_dDegree = 0;
+  this->applyRotateForce(ship_properties::TURN_STRENGTH);
 }
 
 void Ship::boost()
 {
-  // this->_dx = ship_properties::SPEED * cos(this->_degree);
-  // this->_dy = ship_properties::SPEED * sin(this->_degree);
-  this->_dSpeed += ship_properties::ACCELERATION;
-}
-
-void Ship::stopBoost()
-{
-  // this->_dx = 0;
-  // this->_dy = 0;
+  this->applyForwardForce(ship_properties::BOOST_STRENGTH);
 }
 
 void Ship::update(float pElapsedTime)
 {
-  if (this->_dSpeed > ship_properties::SPEED_LIMIT)
-    this->_dSpeed = ship_properties::SPEED_LIMIT;
-  if (this->_dSpeed > 0.0f)
-    this->_dSpeed -= ship_properties::DRAG_STRENGTH * pElapsedTime;
-  else
-    this->_dSpeed = 0.0f;
+  if (this->_forwardVel != 0.0f)
+    applyForwardForce(-ship_properties::BOOST_DRAG * this->_forwardVel);
+  if (this->_rotateVel != 0.0f)
+    applyRotateForce(ship_properties::TURN_DRAG * this->_rotateVel * -1);
 
-  if (abs(this->_dDegree) > ship_properties::TURN_LIMIT)
-    this->_dDegree = this->_dDegree > 0.0f ? ship_properties::TURN_LIMIT : -(ship_properties::TURN_LIMIT);
-  if (this->_dDegree > ship_properties::TURN_DRAG_STRENGTH)
-    this->_dDegree -= ship_properties::TURN_DRAG_STRENGTH * pElapsedTime;
-  else if (this->_dDegree < -ship_properties::TURN_DRAG_STRENGTH)
-    this->_dDegree += ship_properties::TURN_DRAG_STRENGTH * pElapsedTime;
-  else
-    this->_dDegree = 0;
+  this->_rotateVel += this->_rotateAcc;
+  this->_forwardVel += this->_forwardAcc;
 
-  this->_x += this->_dSpeed * cos(this->_degree) * pElapsedTime;
-  this->_y += this->_dSpeed * sin(this->_degree) * pElapsedTime;
-  this->_degree += this->_dDegree * pElapsedTime;
+  if (this->_forwardVel > ship_properties::BOOST_SPEED)
+    this->_forwardVel = ship_properties::BOOST_SPEED;
+
+  if (abs(this->_rotateVel) > ship_properties::TURN_SPEED)
+    this->_rotateVel = ship_properties::TURN_SPEED * (this->_rotateVel > 0.0f ? 1 : -1);
+
+  if (this->_rotateVel < ship_properties::TURN_STRENGTH / 10 && this->_rotateVel > ship_properties::TURN_STRENGTH / -10)
+    this->_rotateVel = 0.0f;
+
+  this->_x += this->_forwardVel * SDL_cos(this->_degree) * pElapsedTime;
+  this->_y += this->_forwardVel * SDL_sin(this->_degree) * pElapsedTime;
+  this->_degree += this->_rotateVel * pElapsedTime;
+
+  this->_forwardAcc = 0.0f;
+  this->_rotateAcc = 0.0f;
 }
 
 void Ship::draw(GameWindow &pWindow)
@@ -75,8 +67,18 @@ void Ship::draw(GameWindow &pWindow)
                        (int)this->_y * game_settings::SCALE,
                        this->_srcRect.w * game_settings::SCALE,
                        this->_srcRect.h * game_settings::SCALE};
+
   SDL_Point center = {this->_srcRect.w / 2, this->_srcRect.h / 2};
-  // printf("DEGREE %.2f D DEGREE %.2f\n", this->_degree, this->_dDegree);
-  int degree = (this->_degree * 180 / ship_properties::PI) - 270;
+  int degree = (this->_degree * 180 / M_PI) - 270;
+
   pWindow.renderTexture(this->_texture, &this->_srcRect, &destRect, degree, NULL);
+}
+
+void Ship::applyForwardForce(float force)
+{
+  this->_forwardAcc += force;
+}
+void Ship::applyRotateForce(float force)
+{
+  this->_rotateAcc += force;
 }
