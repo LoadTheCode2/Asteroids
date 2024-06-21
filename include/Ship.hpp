@@ -11,6 +11,7 @@ public:
   void turnRight();
 
   void boost();
+  void brake();
 
   void draw(GameWindow &pWindow);
   void update(float pElapsedTime);

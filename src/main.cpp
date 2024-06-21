@@ -18,7 +18,7 @@ int main(int argc, char **argv)
   GameWindow window;
   InputSystem inputs;
 
-  Ship ship(window, "res/gfx/ship.png", 22, 41);
+  Ship ship(window, "res/gfx/ship.png", 22, 50);
   RenderUnit bg(window, "res/gfx/bg.png", 0, 0, game_settings::WIDTH, game_settings::HEIGHT);
 
   SDL_Event event;
@@ -44,6 +44,8 @@ int main(int argc, char **argv)
       ship.turnRight();
     if (inputs.keyHeld(SDL_SCANCODE_UP))
       ship.boost();
+    if (inputs.keyHeld(SDL_SCANCODE_DOWN))
+      ship.brake();
 
     inputs.reset();
 
