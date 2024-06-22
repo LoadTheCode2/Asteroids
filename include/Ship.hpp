@@ -5,7 +5,7 @@
 class Ship : public RenderUnit
 {
 public:
-  Ship(GameWindow &pWindow, const char *pFilePath, int pW, int pH);
+  Ship(GameWindow &pWindow);
 
   void turnLeft();
   void turnRight();

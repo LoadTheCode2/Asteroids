@@ -1,14 +1,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include <vector>
 
 #include "GameWindow.hpp"
 #include "InputSystem.hpp"
 #include "RenderUnit.hpp"
 #include "Ship.hpp"
+#include "Asteroid.hpp"
 
 int main(int argc, char **argv)
 {
+  srand(time(NULL));
+
   if (SDL_Init(SDL_INIT_VIDEO) > 0)
     std::cout << "SDL2 has failed to init: " << SDL_GetError() << std::endl;
 
@@ -18,8 +22,13 @@ int main(int argc, char **argv)
   GameWindow window;
   InputSystem inputs;
 
-  Ship ship(window, "res/gfx/ship.png", 22, 50);
+  Ship ship(window);
+  std::vector<Asteroid> asteroids;
   RenderUnit bg(window, "res/gfx/bg.png", 0, 0, game_settings::WIDTH, game_settings::HEIGHT);
+
+  asteroids.push_back(Asteroid(window));
+
+  int lastSpawnTime = SDL_GetTicks();
 
   SDL_Event event;
 
@@ -51,7 +60,12 @@ int main(int argc, char **argv)
 
     window.clear();
 
-    bg.draw(window);
+    bg.draw(window, 2);
+
+    for (int i = 0; i < asteroids.size(); i++)
+    {
+      asteroids[i].draw(window);
+    }
 
     ship.draw(window);
 
@@ -65,9 +79,20 @@ int main(int argc, char **argv)
     const int currentFrameTicks = SDL_GetTicks();
     const float elapsedTime = std::min(currentFrameTicks - ancientFrameTicks, timePerFrame);
 
+    for (int i = 0; i < asteroids.size(); i++)
+    {
+      asteroids[i].update(elapsedTime);
+    }
+
     ship.update(elapsedTime);
 
     ancientFrameTicks = SDL_GetTicks();
+
+    if (SDL_GetTicks() - lastSpawnTime > 1000)
+    {
+      asteroids.push_back(Asteroid(window));
+      lastSpawnTime = SDL_GetTicks();
+    }
   }
 
   SDL_Quit();

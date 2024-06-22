@@ -9,15 +9,19 @@
 namespace ship_properties
 {
   const float TURN_SPEED = 0.005f;
-  const float TURN_STRENGTH = 0.001f;
+  const float TURN_STRENGTH = 0.00025f;
   const float TURN_DRAG = 0.05f;
 
   const float BOOST_SPEED = 0.2f;
   const float BOOST_STRENGTH = 0.005f;
-  const float BOOST_DRAG = 0.02f;
+  const float BOOST_DRAG = 0.005f;
+
+  const int WIDTH = 22;
+  const int HEIGHT = 50;
+  const char *FILE_PATH = "res/gfx/ship.png";
 }
 
-Ship::Ship(GameWindow &pWindow, const char *pFilePath, int pW, int pH) : RenderUnit(pWindow, pFilePath, (game_settings::WIDTH - pW / 2) / 2, (game_settings::HEIGHT - pH / 2) / 2, pW, pH), _degree(-M_PI / 2), _forwardVel(0.0f), _rotateVel(0.0f), _forwardAcc(0.0f), _rotateAcc(0.0f) {}
+Ship::Ship(GameWindow &pWindow) : RenderUnit(pWindow, ship_properties::FILE_PATH, (game_settings::WIDTH - ship_properties::WIDTH) / 2, (game_settings::HEIGHT - ship_properties::HEIGHT) / 2, ship_properties::WIDTH, ship_properties::HEIGHT), _degree(-M_PI / 2), _forwardVel(0.0f), _rotateVel(0.0f), _forwardAcc(0.0f), _rotateAcc(0.0f) {}
 
 void Ship::turnLeft()
 {
@@ -51,7 +55,7 @@ void Ship::update(float pElapsedTime)
 
   if (this->_forwardVel > ship_properties::BOOST_SPEED)
     this->_forwardVel = ship_properties::BOOST_SPEED;
-  if (this->_forwardVel < 0.0f)
+  if (this->_forwardVel < ship_properties::BOOST_STRENGTH)
     this->_forwardVel = 0.0f;
 
   if (abs(this->_rotateVel) > ship_properties::TURN_SPEED)
@@ -65,13 +69,13 @@ void Ship::update(float pElapsedTime)
   this->_degree += this->_rotateVel * pElapsedTime;
 
   if (this->_x > game_settings::WIDTH)
-    this->_x -= game_settings::WIDTH + this->_srcRect.w / 2;
-  if (this->_x + this->_srcRect.w / 2 < 0)
-    this->_x += game_settings::WIDTH + this->_srcRect.w / 2;
+    this->_x -= game_settings::WIDTH + ship_properties::WIDTH;
+  if (this->_x + ship_properties::WIDTH < 0)
+    this->_x += game_settings::WIDTH + ship_properties::WIDTH;
   if (this->_y > game_settings::HEIGHT)
-    this->_y -= game_settings::HEIGHT + this->_srcRect.h / 2;
-  if (this->_y + this->_srcRect.h / 2 < 0)
-    this->_y += game_settings::HEIGHT + this->_srcRect.h / 2;
+    this->_y -= game_settings::HEIGHT + ship_properties::HEIGHT;
+  if (this->_y + ship_properties::HEIGHT < 0)
+    this->_y += game_settings::HEIGHT + ship_properties::HEIGHT;
 
   this->_forwardAcc = 0.0f;
   this->_rotateAcc = 0.0f;
@@ -79,17 +83,11 @@ void Ship::update(float pElapsedTime)
 
 void Ship::draw(GameWindow &pWindow)
 {
-  this->_srcRect.x = floor(this->_forwardVel / (ship_properties::BOOST_SPEED / 3)) * this->_srcRect.w;
+  this->_srcRect.x = floor(this->_forwardVel / (ship_properties::BOOST_SPEED / 3)) * ship_properties::WIDTH;
 
-  SDL_Rect destRect = {(int)this->_x * game_settings::SCALE,
-                       (int)this->_y * game_settings::SCALE,
-                       this->_srcRect.w * game_settings::SCALE / 2,
-                       this->_srcRect.h * game_settings::SCALE / 2};
-
-  SDL_Point center = {this->_srcRect.w / 2, this->_srcRect.h / 2};
   int degree = (this->_degree * 180 / M_PI) - 270;
 
-  pWindow.renderTexture(this->_texture, &this->_srcRect, &destRect, degree, NULL);
+  RenderUnit::draw(pWindow, 1, degree);
 }
 
 void Ship::applyForwardForce(float force)
