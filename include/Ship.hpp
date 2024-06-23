@@ -13,6 +13,9 @@ public:
   void boost();
   void brake();
 
+  void shoot(GameWindow &pWindow, std::vector<Bullet> &pBullets);
+  bool collidesWith(SDL_Rect pRect);
+
   void draw(GameWindow &pWindow);
   void update(float pElapsedTime);
 

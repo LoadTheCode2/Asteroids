@@ -3,8 +3,6 @@
 #include "GameWindow.hpp"
 #include "RenderUnit.hpp"
 
-RenderUnit::RenderUnit() {}
-
 RenderUnit::RenderUnit(GameWindow &pWindow, const char *pFilePath, float pX, float pY, int pW, int pH)
     : _x(pX), _y(pY), _texture(pWindow.loadTexture(pFilePath))
 {

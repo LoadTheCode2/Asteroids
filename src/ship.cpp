@@ -1,10 +1,13 @@
 #include <SDL2/SDL.h>
 #include <cmath>
+#include <vector>
 #include <iostream>
 
-#include "Ship.hpp"
 #include "RenderUnit.hpp"
 #include "GameWindow.hpp"
+#include "Asteroid.hpp"
+#include "Bullet.hpp"
+#include "Ship.hpp"
 
 namespace ship_properties
 {
@@ -14,7 +17,7 @@ namespace ship_properties
 
   const float BOOST_SPEED = 0.2f;
   const float BOOST_STRENGTH = 0.005f;
-  const float BOOST_DRAG = 0.005f;
+  const float BOOST_DRAG = 0.0025f;
 
   const int WIDTH = 22;
   const int HEIGHT = 50;
@@ -97,4 +100,18 @@ void Ship::applyForwardForce(float force)
 void Ship::applyRotateForce(float force)
 {
   this->_rotateAcc += force;
+}
+
+void Ship::shoot(GameWindow &pWindow, std::vector<Bullet> &pBullets)
+{
+  float centerX = this->_x + ship_properties::WIDTH / 2.0f;
+  float centerY = this->_y + ship_properties::HEIGHT / 2.0f;
+
+  pBullets.push_back(Bullet(pWindow, centerX, centerY, this->_degree));
+}
+
+bool Ship::collidesWith(SDL_Rect pRect)
+{
+  return this->_x + ship_properties::WIDTH > pRect.x && this->_x < pRect.x + pRect.w &&
+         this->_y<pRect.y + pRect.h &&this->_y + ship_properties::HEIGHT> pRect.y;
 }

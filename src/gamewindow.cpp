@@ -24,6 +24,8 @@ GameWindow::~GameWindow()
 
 SDL_Texture *GameWindow::loadTexture(const char *pFilePath)
 {
+  if (pFilePath == NULL)
+    return NULL;
   if (this->_textures.count(pFilePath) == 0)
   {
     SDL_Texture *texture = NULL;
