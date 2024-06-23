@@ -2,6 +2,8 @@
 
 #include <map>
 
+union SDL_Event;
+
 class InputSystem
 {
 public:

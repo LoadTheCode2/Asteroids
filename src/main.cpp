@@ -1,14 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
-#include <vector>
 
-#include "GameWindow.hpp"
-#include "InputSystem.hpp"
-#include "RenderUnit.hpp"
-#include "Asteroid.hpp"
-#include "Bullet.hpp"
-#include "Ship.hpp"
+#include <GameWindow.hpp>
+#include <InputSystem.hpp>
+#include <Ship.hpp>
+#include <Asteroid.hpp>
+#include <RenderUnit.hpp>
+#include <Bullet.hpp>
 
 int main(int argc, char **argv)
 {
@@ -34,7 +33,7 @@ int main(int argc, char **argv)
     std::vector<Bullet> bullets;
     RenderUnit bg(window, "res/gfx/bg.png", 0, 0, game_settings::WIDTH, game_settings::HEIGHT);
 
-    asteroids.push_back(Asteroid(window));
+    asteroids.push_back(Asteroid(window, ship));
 
     int lastSpawnTime = SDL_GetTicks();
 
@@ -119,7 +118,7 @@ int main(int argc, char **argv)
                 bullets[i].collidesWith(asteroids[j].getBoundingBox()))
             {
 
-              pendingAsteroids.push_back(asteroids[j].smash(window));
+              pendingAsteroids.push_back(asteroids[j].smash(window, ship));
               bullets.erase(bullets.begin() + i);
             }
           }
@@ -143,7 +142,7 @@ int main(int argc, char **argv)
 
       if (SDL_GetTicks() - lastSpawnTime > 1000)
       {
-        asteroids.push_back(Asteroid(window));
+        asteroids.push_back(Asteroid(window, ship));
         lastSpawnTime = SDL_GetTicks();
       }
     }

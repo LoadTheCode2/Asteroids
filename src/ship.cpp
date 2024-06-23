@@ -1,11 +1,6 @@
 #include <SDL2/SDL.h>
-#include <cmath>
-#include <vector>
-#include <iostream>
 
-#include "RenderUnit.hpp"
 #include "GameWindow.hpp"
-#include "Asteroid.hpp"
 #include "Bullet.hpp"
 #include "Ship.hpp"
 
@@ -61,7 +56,7 @@ void Ship::update(float pElapsedTime)
   if (this->_forwardVel < ship_properties::BOOST_STRENGTH)
     this->_forwardVel = 0.0f;
 
-  if (abs(this->_rotateVel) > ship_properties::TURN_SPEED)
+  if (std::abs(this->_rotateVel) > ship_properties::TURN_SPEED)
     this->_rotateVel = ship_properties::TURN_SPEED * (this->_rotateVel > 0.0f ? 1 : -1);
 
   if (this->_rotateVel < ship_properties::TURN_STRENGTH / 10 && this->_rotateVel > ship_properties::TURN_STRENGTH / -10)
@@ -86,7 +81,7 @@ void Ship::update(float pElapsedTime)
 
 void Ship::draw(GameWindow &pWindow)
 {
-  this->_srcRect.x = floor(this->_forwardVel / (ship_properties::BOOST_SPEED / 3)) * ship_properties::WIDTH;
+  this->_srcRect.x = SDL_floor(this->_forwardVel / (ship_properties::BOOST_SPEED / 3)) * ship_properties::WIDTH;
 
   int degree = (this->_degree * 180 / M_PI) - 270;
 
@@ -114,4 +109,9 @@ bool Ship::collidesWith(SDL_Rect pRect)
 {
   return this->_x + ship_properties::WIDTH > pRect.x && this->_x < pRect.x + pRect.w &&
          this->_y<pRect.y + pRect.h &&this->_y + ship_properties::HEIGHT> pRect.y;
+}
+
+std::vector<int> Ship::getPos()
+{
+  return {(int)this->_x, (int)this->_y};
 }

@@ -1,9 +1,7 @@
 #include <SDL2/SDL.h>
-#include <iostream>
+#include <cmath>
 
 #include "GameWindow.hpp"
-#include "RenderUnit.hpp"
-#include "Asteroid.hpp"
 #include "Bullet.hpp"
 
 namespace bullet_properties

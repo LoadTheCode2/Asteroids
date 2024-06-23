@@ -2,6 +2,9 @@
 
 class GameWindow;
 
+struct SDL_Texture;
+struct SDL_Rect;
+
 class RenderUnit
 {
 public:

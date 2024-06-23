@@ -12,6 +12,12 @@ namespace game_settings
   const int DELAY_OFFSET = 1;
 }
 
+struct SDL_Texture;
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Rect;
+struct SDL_Point;
+
 class GameWindow
 {
 public:

@@ -1,5 +1,9 @@
 #pragma once
 
+#include "RenderUnit.hpp"
+
+struct SDL_Rect;
+
 class Bullet : public RenderUnit
 {
 public:

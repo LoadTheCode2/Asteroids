@@ -1,6 +1,10 @@
 #pragma once
 
-#include <RenderUnit.hpp>
+#include <vector>
+
+#include "RenderUnit.hpp"
+
+class Bullet;
 
 class Ship : public RenderUnit
 {
@@ -18,6 +22,8 @@ public:
 
   void draw(GameWindow &pWindow);
   void update(float pElapsedTime);
+
+  std::vector<int> getPos();
 
 private:
   float _degree, _rotateVel, _forwardVel;
