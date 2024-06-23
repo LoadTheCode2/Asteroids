@@ -7,7 +7,7 @@
 
 namespace asteroid_properties
 {
-  const float SPEED = 0.1f;
+  const float SPEED = 0.2f;
 
   const int WIDTH = 32;
   const int HEIGHT = 32;
